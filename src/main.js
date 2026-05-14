@@ -19,6 +19,44 @@ const initReveal = () => {
   });
 };
 
+// ─── Count-up metrics ───
+const initCounters = () => {
+  const counters = document.querySelectorAll('.counter');
+  if (!counters.length) return;
+
+  const seen = new WeakSet();
+
+  const animateCounter = (el) => {
+    const target = Number(el.dataset.target || 0);
+    const duration = 1200;
+    const start = performance.now();
+
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const value = Math.floor(progress * target);
+      el.textContent = value.toString();
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !seen.has(entry.target)) {
+          seen.add(entry.target);
+          animateCounter(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
+
+  counters.forEach((counter) => observer.observe(counter));
+};
+
 // ─── Navbar show/hide on scroll ───
 const initNavbar = () => {
   const navbar = document.getElementById('navbar');
@@ -147,6 +185,7 @@ const initGitHubRepos = () => {
     {
       name: 'trashware-iot',
       description: 'Smart Trash Bin IoT system with Cloud Computing & Big Data integration for real-time campus monitoring.',
+      url: 'https://github.com/soulqan/trashware',
       language: 'Dart',
       langColor: '#00B4AB',
       stars: 12,
@@ -155,6 +194,7 @@ const initGitHubRepos = () => {
     {
       name: 'pentagram-app',
       description: 'Mobile citizen data management app with community chat, financial tools, and KTP OCR integration.',
+      url: 'https://github.com/Ruphasa/Four-Heavenly-Principle',
       language: 'Dart',
       langColor: '#00B4AB',
       stars: 8,
@@ -163,6 +203,7 @@ const initGitHubRepos = () => {
     {
       name: 'laporsana',
       description: 'Campus facility damage reporting system with priority repair recommendations.',
+      url: 'https://github.com/AlexanderDev2004/LaporSana',
       language: 'PHP',
       langColor: '#4F5D95',
       stars: 5,
@@ -171,6 +212,7 @@ const initGitHubRepos = () => {
     {
       name: 'pemrograman-berbasis-framework',
       description: 'Repository untuk mata kuliah Pemrograman Berbasis Framework, mencakup praktikum dan proyek pengembangan aplikasi web modern.',
+      url: 'https://github.com/NathanaelGracedo/pemrograman-berbasis-framework',
       language: 'TypeScript',
       langColor: '#3178C6',
       stars: 3,
@@ -179,6 +221,7 @@ const initGitHubRepos = () => {
     {
       name: 'PROGRAMING_MOBILE_2025-2026',
       description: 'Mata Kuliah Pemrograman Mobile Semester 5 — kumpulan tugas, praktikum, dan proyek pengembangan aplikasi mobile.',
+      url: 'https://github.com/NathanaelGracedo/PROGRAMING_MOBILE_2025-2026',
       language: 'Dart',
       langColor: '#00B4AB',
       stars: 2,
@@ -187,6 +230,7 @@ const initGitHubRepos = () => {
     {
       name: '2341720217_ML_2025',
       description: 'Repository pengerjaan praktikum maupun proyek dari mata kuliah Machine Learning Semester 5.',
+      url: 'https://github.com/NathanaelGracedo/2341720217_ML_2025',
       language: 'Python',
       langColor: '#3572A5',
       stars: 1,
@@ -230,7 +274,7 @@ const initGitHubRepos = () => {
     `;
 
     card.addEventListener('click', () => {
-      window.open(`https://github.com/NathanaelGracedo/${repo.name}`, '_blank');
+      window.open(repo.url, '_blank');
     });
 
     container.appendChild(card);
@@ -255,6 +299,7 @@ const initSmoothScroll = () => {
 // ─── Init everything ───
 document.addEventListener('DOMContentLoaded', () => {
   initReveal();
+  initCounters();
   initNavbar();
   initMobileMenu();
   initCardGlow();
