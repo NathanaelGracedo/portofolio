@@ -51,7 +51,7 @@ const {
 
   if (img && canvas) {
     const ctx = canvas.getContext('2d');
-    const chars = ' .,:;i1tfLCG08@';
+    const chars = ' .:-=+*#%@01><';
 
     const renderAscii = () => {
       if (!ctx || !img.naturalWidth || !img.naturalHeight) return;
@@ -72,8 +72,9 @@ const {
         offCtx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
         const imgData = offCtx.getImageData(0, 0, sampleWidth, sampleHeight).data;
 
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
         ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = '#0a0a0a';
+        ctx.fillStyle = isLight ? '#ffffff' : '#0a0a0a';
         ctx.fillRect(0, 0, w, h);
 
         const cellW = w / sampleWidth;
@@ -92,7 +93,11 @@ const {
             const charIndex = Math.floor(brightness * (chars.length - 1));
             const char = chars[charIndex];
 
-            ctx.fillStyle = brightness > 0.6 ? '#60a5fa' : brightness > 0.3 ? '#3b82f6' : '#1e3a8a';
+            if (isLight) {
+              ctx.fillStyle = brightness > 0.6 ? '#1b5def' : brightness > 0.3 ? '#2563eb' : '#0f172a';
+            } else {
+              ctx.fillStyle = brightness > 0.6 ? '#60a5fa' : brightness > 0.3 ? '#3b82f6' : '#1e3a8a';
+            }
             ctx.fillText(char, x * cellW + cellW / 2, y * cellH + cellH / 2);
           }
         }
@@ -116,5 +121,10 @@ const {
       cancelAnimationFrame(resizeTimer);
       resizeTimer = requestAnimationFrame(renderAscii);
     }, { passive: true });
+
+    // Re-render when theme toggles
+    new MutationObserver(() => {
+      renderAscii();
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
 </script>
