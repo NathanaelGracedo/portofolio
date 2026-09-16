@@ -143,14 +143,28 @@ const projects: ProjectItem[] = [
 </style>
 
 <script>
-  // Mouse tracking border glow for project cards
+  // Mouse tracking border glow for project cards with RAF throttling
   document.querySelectorAll('.project-card').forEach((card) => {
+    let rafId: number | null = null;
+    let clientX = 0;
+    let clientY = 0;
+
     card.addEventListener('mousemove', (e) => {
-      const rect = (card as HTMLElement).getBoundingClientRect();
-      const x = (((e as MouseEvent).clientX - rect.left) / rect.width) * 100;
-      const y = (((e as MouseEvent).clientY - rect.top) / rect.height) * 100;
-      (card as HTMLElement).style.setProperty('--mouse-x', `${x}%`);
-      (card as HTMLElement).style.setProperty('--mouse-y', `${y}%`);
+      const me = e as MouseEvent;
+      clientX = me.clientX;
+      clientY = me.clientY;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          const el = card as HTMLElement;
+          const rect = el.getBoundingClientRect();
+          const x = ((clientX - rect.left) / rect.width) * 100;
+          const y = ((clientY - rect.top) / rect.height) * 100;
+          el.style.setProperty('--mouse-x', `${x}%`);
+          el.style.setProperty('--mouse-y', `${y}%`);
+          rafId = null;
+        });
+      }
     });
   });
 </script>
