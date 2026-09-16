@@ -1,6 +1,6 @@
 ---
 ---
-<div id="shortcuts-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 font-mono" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+<div id="shortcuts-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 font-mono" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" inert>
   <div class="relative w-full max-w-lg mx-4 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl shadow-2xl p-6 text-xs transform scale-95 transition-transform duration-200" id="shortcuts-content">
     <!-- Header -->
     <div class="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-color)]">
@@ -8,7 +8,7 @@
         <span class="text-[var(--accent-blue)] font-bold">//</span>
         <h3 id="shortcuts-title" class="font-bold text-sm tracking-wide text-[var(--text-primary)]">keyboard.shortcuts</h3>
       </div>
-      <button id="close-shortcuts-btn" class="p-1 hover:text-[var(--accent-orange)] text-[var(--text-muted)] cursor-pointer" aria-label="Close modal">
+      <button id="close-shortcuts-btn" type="button" class="p-1 hover:text-[var(--accent-orange)] text-[var(--text-muted)] cursor-pointer" aria-label="Close modal">
         ✕
       </button>
     </div>
@@ -57,16 +57,20 @@
     isOpen = open;
     if (modal && content) {
       if (isOpen) {
+        modal.removeAttribute('inert');
         modal.classList.remove('opacity-0', 'pointer-events-none');
         modal.classList.add('opacity-100', 'pointer-events-auto');
         content.classList.remove('scale-95');
         content.classList.add('scale-100');
+        closeBtn?.focus();
         window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'MODAL' }));
       } else {
+        modal.setAttribute('inert', '');
         modal.classList.remove('opacity-100', 'pointer-events-auto');
         modal.classList.add('opacity-0', 'pointer-events-none');
         content.classList.remove('scale-100');
         content.classList.add('scale-95');
+        toggleBtn?.focus();
         window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'NORMAL' }));
       }
     }
@@ -87,8 +91,9 @@
   };
 
   window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     const target = e.target as HTMLElement | null;
-    if (target && (['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable)) return;
+    if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
 
     if (e.key === '?' || (e.shiftKey && e.key === '/')) {
       e.preventDefault();
@@ -96,26 +101,30 @@
     } else if (e.key === 'Escape' && isOpen) {
       setOpen(false);
     } else if (!isOpen) {
-      if (e.key === '1') jumpTo('hero');
-      if (e.key === '2') jumpTo('experience');
-      if (e.key === '3') jumpTo('projects');
-      if (e.key === '4') jumpTo('education');
-      if (e.key === '5') jumpTo('skills');
-      if (e.key === '6') jumpTo('contact');
-      if (e.key === 'g' && !e.shiftKey) window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (!e.shiftKey) {
+        if (e.key === '1') jumpTo('hero');
+        else if (e.key === '2') jumpTo('experience');
+        else if (e.key === '3') jumpTo('projects');
+        else if (e.key === '4') jumpTo('education');
+        else if (e.key === '5') jumpTo('skills');
+        else if (e.key === '6') jumpTo('contact');
+        else if (e.key === 'g') window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       if (e.key === 'G' || (e.shiftKey && (e.key === 'g' || e.key === 'G'))) {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }
     } else if (isOpen) {
-      if (e.key === '1') jumpTo('hero');
-      if (e.key === '2') jumpTo('experience');
-      if (e.key === '3') jumpTo('projects');
-      if (e.key === '4') jumpTo('education');
-      if (e.key === '5') jumpTo('skills');
-      if (e.key === '6') jumpTo('contact');
-      if (e.key === 'g' && !e.shiftKey) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setOpen(false);
+      if (!e.shiftKey) {
+        if (e.key === '1') jumpTo('hero');
+        else if (e.key === '2') jumpTo('experience');
+        else if (e.key === '3') jumpTo('projects');
+        else if (e.key === '4') jumpTo('education');
+        else if (e.key === '5') jumpTo('skills');
+        else if (e.key === '6') jumpTo('contact');
+        else if (e.key === 'g') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setOpen(false);
+        }
       }
       if (e.key === 'G' || (e.shiftKey && (e.key === 'g' || e.key === 'G'))) {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });

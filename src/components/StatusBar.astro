@@ -36,12 +36,12 @@
       <span class="text-[var(--border-color)]">|</span>
       
       <!-- Theme Switcher Button -->
-      <button id="theme-toggle-btn" class="hover:text-[var(--accent-orange)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Toggle Theme (T)">
+      <button id="theme-toggle-btn" type="button" class="hover:text-[var(--accent-orange)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Toggle Theme (T)">
         [<span id="theme-icon">🌓</span> <span class="hidden sm:inline">Theme</span>]
       </button>
 
       <!-- Shortcuts Trigger Button -->
-      <button id="shortcuts-toggle-btn" class="hover:text-[var(--accent-blue)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Keyboard Shortcuts (?)">
+      <button id="shortcuts-toggle-btn" type="button" class="hover:text-[var(--accent-blue)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Keyboard Shortcuts (?)">
         [?]
       </button>
     </div>
@@ -119,14 +119,17 @@
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch (e) {}
   };
   themeBtn?.addEventListener('click', toggleTheme);
 
   // Dispatch key 'T' for theme
   window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     const target = e.target as HTMLElement | null;
-    if (target && (['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable)) return;
+    if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
     if (e.key === 't' || e.key === 'T') {
       toggleTheme();
     }
