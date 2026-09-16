@@ -1,0 +1,126 @@
+---
+---
+<div id="shortcuts-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 font-mono" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+  <div class="relative w-full max-w-lg mx-4 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-xl shadow-2xl p-6 text-xs transform scale-95 transition-transform duration-200" id="shortcuts-content">
+    <!-- Header -->
+    <div class="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-color)]">
+      <div class="flex items-center gap-2">
+        <span class="text-[var(--accent-blue)] font-bold">//</span>
+        <h3 id="shortcuts-title" class="font-bold text-sm tracking-wide text-[var(--text-primary)]">keyboard.shortcuts</h3>
+      </div>
+      <button id="close-shortcuts-btn" class="p-1 hover:text-[var(--accent-orange)] text-[var(--text-muted)] cursor-pointer" aria-label="Close modal">
+        ✕
+      </button>
+    </div>
+
+    <!-- Shortcuts Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div>
+        <p class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Navigation</p>
+        <ul class="space-y-2">
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Hero</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">1</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Experience</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">2</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Projects</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">3</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Education</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">4</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Skills</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">5</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Contact</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">6</kbd></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Actions</p>
+        <ul class="space-y-2">
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Toggle Theme</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">T</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Scroll to Top</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">G</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Scroll to Bottom</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Shift+G</kbd></li>
+          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Close Dialog</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Esc</kbd></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="pt-3 border-t border-[var(--border-color)] text-center text-[10px] text-[var(--text-muted)]">
+      Press <kbd class="px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">?</kbd> anywhere to toggle this menu.
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('shortcuts-modal');
+  const content = document.getElementById('shortcuts-content');
+  const closeBtn = document.getElementById('close-shortcuts-btn');
+  const toggleBtn = document.getElementById('shortcuts-toggle-btn');
+
+  let isOpen = false;
+
+  const setOpen = (open: boolean) => {
+    isOpen = open;
+    if (modal && content) {
+      if (isOpen) {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+        content.classList.remove('scale-95');
+        content.classList.add('scale-100');
+        window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'MODAL' }));
+      } else {
+        modal.classList.remove('opacity-100', 'pointer-events-auto');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+        window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'NORMAL' }));
+      }
+    }
+  };
+
+  closeBtn?.addEventListener('click', () => setOpen(false));
+  toggleBtn?.addEventListener('click', () => setOpen(!isOpen));
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) setOpen(false);
+  });
+
+  const jumpTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      setOpen(false);
+    }
+  };
+
+  window.addEventListener('keydown', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target && (['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable)) return;
+
+    if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+      e.preventDefault();
+      setOpen(!isOpen);
+    } else if (e.key === 'Escape' && isOpen) {
+      setOpen(false);
+    } else if (!isOpen) {
+      if (e.key === '1') jumpTo('hero');
+      if (e.key === '2') jumpTo('experience');
+      if (e.key === '3') jumpTo('projects');
+      if (e.key === '4') jumpTo('education');
+      if (e.key === '5') jumpTo('skills');
+      if (e.key === '6') jumpTo('contact');
+      if (e.key === 'g' && !e.shiftKey) window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (e.key === 'G' || (e.shiftKey && (e.key === 'g' || e.key === 'G'))) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    } else if (isOpen) {
+      if (e.key === '1') jumpTo('hero');
+      if (e.key === '2') jumpTo('experience');
+      if (e.key === '3') jumpTo('projects');
+      if (e.key === '4') jumpTo('education');
+      if (e.key === '5') jumpTo('skills');
+      if (e.key === '6') jumpTo('contact');
+      if (e.key === 'g' && !e.shiftKey) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setOpen(false);
+      }
+      if (e.key === 'G' || (e.shiftKey && (e.key === 'g' || e.key === 'G'))) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        setOpen(false);
+      }
+    }
+  });
+</script>

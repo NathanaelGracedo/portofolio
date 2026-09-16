@@ -1,0 +1,134 @@
+---
+---
+<aside id="status-bar" class="fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-primary)]/90 backdrop-blur-md border-t border-[var(--border-color)] font-mono text-[11px] text-[var(--text-secondary)] select-none">
+  <div class="max-w-6xl mx-auto px-4 h-9 flex items-center justify-between gap-4">
+    <!-- Left: Path & Mode -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1 text-[var(--accent-green)]">
+        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+        <span class="font-bold tracking-wider">LIVE</span>
+      </div>
+      <span class="text-[var(--border-color)]">|</span>
+      <div class="flex items-center gap-1.5">
+        <span class="text-[var(--text-muted)]">path:</span>
+        <span id="sb-path" class="text-[var(--text-primary)] font-medium">~/nathanael</span>
+      </div>
+      <span class="hidden sm:inline-block text-[var(--border-color)]">|</span>
+      <div class="hidden sm:flex items-center gap-1.5">
+        <span class="text-[var(--text-muted)]">mode:</span>
+        <span id="sb-mode" class="text-[var(--accent-blue)] font-medium">NORMAL</span>
+      </div>
+    </div>
+
+    <!-- Center: Scroll Progress Bar -->
+    <div class="hidden md:flex items-center gap-2 flex-1 max-w-xs mx-auto">
+      <div class="w-full bg-[var(--border-color)] h-1 rounded-full overflow-hidden">
+        <div id="sb-progress-bar" class="h-full bg-[var(--accent-blue)] w-0 transition-all duration-75"></div>
+      </div>
+      <span id="sb-progress-num" class="w-9 text-right text-[var(--text-muted)] font-mono text-[10px]">0%</span>
+    </div>
+
+    <!-- Right: Clock & Triggers -->
+    <div class="flex items-center gap-3">
+      <div id="sb-clock" class="hidden sm:block text-[var(--text-muted)] tabular-nums font-medium">
+        00:00:00 WIB
+      </div>
+      <span class="text-[var(--border-color)]">|</span>
+      
+      <!-- Theme Switcher Button -->
+      <button id="theme-toggle-btn" class="hover:text-[var(--accent-orange)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Toggle Theme (T)">
+        [<span id="theme-icon">🌓</span> <span class="hidden sm:inline">Theme</span>]
+      </button>
+
+      <!-- Shortcuts Trigger Button -->
+      <button id="shortcuts-toggle-btn" class="hover:text-[var(--accent-blue)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Keyboard Shortcuts (?)">
+        [?]
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script>
+  // 1. Live Clock
+  const clockEl = document.getElementById('sb-clock');
+  const updateClock = () => {
+    if (!clockEl) return;
+    const now = new Date();
+    // WIB is UTC+7
+    const timeStr = now.toLocaleTimeString('id-ID', {
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
+    });
+    clockEl.textContent = `${timeStr} WIB`;
+  };
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // 2. Scroll Progress & Path Indicator
+  const pathEl = document.getElementById('sb-path');
+  const progressBar = document.getElementById('sb-progress-bar');
+  const progressNum = document.getElementById('sb-progress-num');
+
+  const sections = ['hero', 'experience', 'projects', 'education', 'skills', 'contact'];
+
+  const onScroll = () => {
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = docHeight > 0 ? Math.min(Math.round((scrollY / docHeight) * 100), 100) : 0;
+
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressNum) progressNum.textContent = `${percent}%`;
+
+    // Detect active section
+    let currentSection = 'hero';
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom > 120) {
+          currentSection = id;
+          break;
+        }
+      }
+    }
+    if (docHeight > 0 && scrollY >= docHeight - 30) {
+      currentSection = 'contact';
+    }
+    if (pathEl) pathEl.textContent = `~/nathanael/${currentSection}`;
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // 3. HUD Mode Listener
+  const modeEl = document.getElementById('sb-mode');
+  window.addEventListener('hud-mode-change', ((e: CustomEvent) => {
+    if (!modeEl || !e.detail) return;
+    const modal = document.getElementById('shortcuts-modal');
+    const isModalOpen = modal && !modal.classList.contains('pointer-events-none');
+    if (isModalOpen && e.detail === 'NORMAL') {
+      modeEl.textContent = 'MODAL';
+    } else {
+      modeEl.textContent = e.detail;
+    }
+  }) as EventListener);
+
+  // 4. Theme Toggle Logic
+  const themeBtn = document.getElementById('theme-toggle-btn');
+  const toggleTheme = () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  };
+  themeBtn?.addEventListener('click', toggleTheme);
+
+  // Dispatch key 'T' for theme
+  window.addEventListener('keydown', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target && (['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable)) return;
+    if (e.key === 't' || e.key === 'T') {
+      toggleTheme();
+    }
+  });
+</script>

@@ -4,6 +4,8 @@ import TopNav from '../components/TopNav.astro';
 import Footer from '../components/Footer.astro';
 import GridCanvas from '../components/GridCanvas.astro';
 import CustomCursor from '../components/CustomCursor.astro';
+import StatusBar from '../components/StatusBar.astro';
+import ShortcutsModal from '../components/ShortcutsModal.astro';
 
 interface Props {
   title?: string;
@@ -49,5 +51,7 @@ const {
   <TopNav />
   <slot />
   <Footer />
+  <StatusBar />
+  <ShortcutsModal />
 </body>
 </html>
