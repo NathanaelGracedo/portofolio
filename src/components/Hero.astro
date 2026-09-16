@@ -1,0 +1,103 @@
+---
+import AsciiRevealPhoto from './AsciiRevealPhoto.astro';
+import profileImg from '../assets/profile.png';
+---
+<section id="hero" class="relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-6 overflow-hidden">
+  <div class="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+    
+    <!-- Left Column: Copy & Bio -->
+    <div class="lg:col-span-7 flex flex-col items-start">
+      <!-- HUD Pre-title -->
+      <div class="flex items-center gap-2 mb-4">
+        <span class="hud-comment">// system.init</span>
+        <span class="text-[var(--border-color)]">/</span>
+        <span class="hud-tag">portofolio v2.0</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 leading-tight">
+        <span>Nathanael</span><br />
+        <span class="text-[var(--accent-blue)]">Juan Gracedo</span>
+      </h1>
+
+      <p class="font-mono text-sm sm:text-base text-[var(--accent-orange)] font-medium mb-6">
+        AI & Software Developer
+      </p>
+
+      <!-- Bio Paragraph -->
+      <p class="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed mb-8 max-w-xl">
+        Undergraduate student in Informatics Engineering (<span class="text-[var(--text-primary)] font-semibold">Sarjana Terapan Teknik Informatika</span>) at Politeknik Negeri Malang with a strong focus on Artificial Intelligence and software development. Experienced in building scalable cross-platform mobile and web applications with clean, responsive, and human-centric UI/UX.
+      </p>
+
+      <!-- Metric Cards Grid -->
+      <div class="grid grid-cols-3 gap-3 w-full max-w-xl mb-8">
+        <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
+          <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)] counter" data-target="4">0</div>
+          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Highlighted Projects</p>
+        </div>
+        <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
+          <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--accent-blue)] counter" data-target="1">0</div>
+          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Industry Intern (SIDIGS)</p>
+        </div>
+        <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
+          <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">D4 TI</div>
+          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Polinema Malang</p>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap items-center gap-4 font-mono text-xs">
+        <a href="#projects" class="px-5 py-2.5 rounded-lg bg-[var(--accent-blue)] text-white font-medium hover:opacity-90 transition-opacity">
+          View Projects →
+        </a>
+        <a href="#contact" class="px-5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors">
+          Get in Touch
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Photo with ASCII Reveal -->
+    <div class="lg:col-span-5 flex justify-center">
+      <AsciiRevealPhoto imageSrc={profileImg.src} alt="Nathanael Juan Gracedo" />
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // Counter animation
+  const counters = document.querySelectorAll('.counter');
+  if (counters.length) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          const target = Number(el.dataset.target || 0);
+
+          if (prefersReducedMotion) {
+            el.textContent = target.toString() + '+';
+            observer.unobserve(el);
+            return;
+          }
+
+          const duration = 1200;
+          const start = performance.now();
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1);
+            el.textContent = Math.floor(progress * target).toString() + '+';
+            if (progress < 1) {
+              requestAnimationFrame(step);
+            } else {
+              el.textContent = target.toString() + '+';
+            }
+          };
+          requestAnimationFrame(step);
+          observer.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach((c) => observer.observe(c));
+  }
+</script>

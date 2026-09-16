@@ -1,0 +1,120 @@
+---
+import profileImg from '../assets/profile.png';
+import heroImg from '../assets/hero.png';
+
+interface Props {
+  imageSrc?: string;
+  alt?: string;
+}
+
+const {
+  imageSrc = profileImg.src || heroImg.src,
+  alt = "Nathanael Juan Gracedo"
+} = Astro.props;
+---
+<div class="relative w-full max-w-[320px] sm:max-w-[360px] aspect-[4/5] mx-auto group select-none">
+  <!-- Outer HUD decorative frame -->
+  <div class="absolute -inset-2 border border-[var(--border-color)] rounded-xl pointer-events-none group-hover:border-[var(--accent-blue)]/50 transition-colors duration-500"></div>
+  <div class="absolute -top-1 -left-1 w-2 h-2 border-t-2 border-l-2 border-[var(--accent-blue)]"></div>
+  <div class="absolute -top-1 -right-1 w-2 h-2 border-t-2 border-r-2 border-[var(--accent-blue)]"></div>
+  <div class="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-[var(--accent-blue)]"></div>
+  <div class="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-[var(--accent-blue)]"></div>
+
+  <!-- Real Portrait Photo -->
+  <div class="relative w-full h-full rounded-lg overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-color)]">
+    <img
+      id="profile-img"
+      src={imageSrc}
+      alt={alt}
+      class="w-full h-full object-cover object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-700"
+      loading="eager"
+      crossorigin="anonymous"
+    />
+
+    <!-- Canvas ASCII Matrix Overlay -->
+    <canvas
+      id="ascii-canvas"
+      class="absolute inset-0 w-full h-full pointer-events-auto cursor-crosshair transition-opacity duration-700 opacity-90 group-hover:opacity-10"
+    ></canvas>
+  </div>
+
+  <!-- HUD Tag Under Photo -->
+  <div class="mt-3 flex items-center justify-between font-mono text-[10px] text-[var(--text-muted)]">
+    <span>// id: NJG-2026</span>
+    <span class="text-[var(--accent-blue)]">HOVER TO DECODE</span>
+  </div>
+</div>
+
+<script>
+  const img = document.getElementById('profile-img') as HTMLImageElement | null;
+  const canvas = document.getElementById('ascii-canvas') as HTMLCanvasElement | null;
+
+  if (img && canvas) {
+    const ctx = canvas.getContext('2d');
+    const chars = ' .,:;i1tfLCG08@';
+
+    const renderAscii = () => {
+      if (!ctx || !img.naturalWidth || !img.naturalHeight) return;
+      const w = (canvas.width = canvas.parentElement?.clientWidth || 320);
+      const h = (canvas.height = canvas.parentElement?.clientHeight || 400);
+
+      // Create offscreen canvas to read pixel data
+      const offscreen = document.createElement('canvas');
+      const offCtx = offscreen.getContext('2d');
+      const sampleWidth = 55;
+      const sampleHeight = Math.max(1, Math.floor(sampleWidth * (h / w)));
+      offscreen.width = sampleWidth;
+      offscreen.height = sampleHeight;
+
+      if (!offCtx) return;
+      
+      try {
+        offCtx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
+        const imgData = offCtx.getImageData(0, 0, sampleWidth, sampleHeight).data;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, w, h);
+
+        const cellW = w / sampleWidth;
+        const cellH = h / sampleHeight;
+        ctx.font = `${Math.floor(cellW * 1.2)}px 'JetBrains Mono', monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        for (let y = 0; y < sampleHeight; y++) {
+          for (let x = 0; x < sampleWidth; x++) {
+            const idx = (y * sampleWidth + x) * 4;
+            const r = imgData[idx];
+            const g = imgData[idx + 1];
+            const b = imgData[idx + 2];
+            const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+            const charIndex = Math.floor(brightness * (chars.length - 1));
+            const char = chars[charIndex];
+
+            ctx.fillStyle = brightness > 0.6 ? '#60a5fa' : brightness > 0.3 ? '#3b82f6' : '#1e3a8a';
+            ctx.fillText(char, x * cellW + cellW / 2, y * cellH + cellH / 2);
+          }
+        }
+      } catch (err) {
+        console.warn('ASCII reveal: unable to read pixel data', err);
+      }
+    };
+
+    if (img.complete && img.naturalWidth > 0) {
+      renderAscii();
+    } else {
+      img.addEventListener('load', renderAscii, { once: true });
+    }
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(renderAscii);
+    }
+
+    let resizeTimer: number;
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(resizeTimer);
+      resizeTimer = requestAnimationFrame(renderAscii);
+    }, { passive: true });
+  }
+</script>
