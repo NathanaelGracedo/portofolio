@@ -1,44 +1,51 @@
 ---
 ---
 <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-  <canvas id="grid-canvas" class="w-full h-full block opacity-40"></canvas>
-  <!-- Subtle top and bottom gradient fades -->
+  <canvas id="grid-canvas" class="w-full h-full block opacity-60"></canvas>
   <div class="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)] via-transparent to-[var(--bg-primary)] opacity-80 pointer-events-none"></div>
 </div>
 
 <script>
+  interface Particle {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    size: number;
+  }
+
   const canvas = document.getElementById('grid-canvas') as HTMLCanvasElement | null;
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let dpr = window.devicePixelRatio || 1;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
     let offset = 0;
     let animationId: number;
     let lastTime = 0;
-    const fps = 30; // throttle for low CPU usage
+    const fps = 35; // Throttled for performance
     const fpsInterval = 1000 / fps;
-    const gridSize = 40;
 
-    const renderGrid = (offsetY: number) => {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, width, height);
+    let mouseX = -1000;
+    let mouseY = -1000;
 
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      ctx.strokeStyle = isLight ? 'rgba(25, 24, 24, 0.05)' : 'rgba(255, 255, 255, 0.04)';
-      ctx.lineWidth = 1;
+    const particles: Particle[] = [];
+    const particleCount = 48;
 
-      ctx.beginPath();
-      for (let x = 0; x <= width; x += gridSize) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
+    const initParticles = () => {
+      particles.length = 0;
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          size: Math.random() * 1.5 + 1
+        });
       }
-      for (let y = offsetY; y <= height; y += gridSize) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-      }
-      ctx.stroke();
     };
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const resize = () => {
       if (!canvas || !ctx) return;
@@ -48,47 +55,140 @@
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      if (mediaQuery.matches) {
-        renderGrid(0);
-      }
+      if (particles.length === 0) initParticles();
+      if (mediaQuery.matches) renderScene(false);
     };
 
     window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => {
+      mouseX = -1000;
+      mouseY = -1000;
+    });
+
+    const renderScene = (isAnimated: boolean) => {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const gridColor = isLight ? 'rgba(25, 24, 24, 0.04)' : 'rgba(255, 255, 255, 0.03)';
+      const nodeColor = isLight ? 'rgba(27, 93, 239, 0.4)' : 'rgba(96, 165, 250, 0.4)';
+      const lineBaseColor = isLight ? '27, 93, 239' : '96, 165, 250';
+
+      const gridSize = 45;
+      if (isAnimated) {
+        offset = (offset + 0.25) % gridSize;
+      }
+
+      // 1. Draw subtle background grid
+      ctx.beginPath();
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = offset; y <= height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // 2. Update and draw particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        if (isAnimated) {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          // Mouse gravitational interaction
+          const dxM = mouseX - p.x;
+          const dyM = mouseY - p.y;
+          const distM = Math.sqrt(dxM * dxM + dyM * dyM);
+          if (distM < 120) {
+            p.x += (dxM / distM) * 0.3;
+            p.y += (dyM / distM) * 0.3;
+          }
+        }
+
+        // Draw particle dot
+        ctx.fillStyle = nodeColor;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. Connect nearby particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 85) {
+            const alpha = (1 - dist / 85) * (isLight ? 0.12 : 0.18);
+            ctx.strokeStyle = `rgba(${lineBaseColor}, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+
+        // Connect particle to mouse
+        const dxM = mouseX - p.x;
+        const dyM = mouseY - p.y;
+        const distM = Math.sqrt(dxM * dxM + dyM * dyM);
+        if (distM < 110) {
+          const alpha = (1 - distM / 110) * (isLight ? 0.25 : 0.35);
+          ctx.strokeStyle = `rgba(${lineBaseColor}, ${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(mouseX, mouseY);
+          ctx.stroke();
+        }
+      }
+    };
+
     resize();
 
-    const draw = (currentTime: number) => {
-      animationId = requestAnimationFrame(draw);
+    const drawLoop = (currentTime: number) => {
+      animationId = requestAnimationFrame(drawLoop);
       const elapsed = currentTime - lastTime;
       if (elapsed < fpsInterval) return;
       lastTime = currentTime - (elapsed % fpsInterval);
-
-      offset = (offset + 0.3) % gridSize;
-      renderGrid(offset);
+      renderScene(true);
     };
 
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!mediaQuery.matches) {
-      animationId = requestAnimationFrame(draw);
+    if (mediaQuery.matches) {
+      renderScene(false);
     } else {
-      renderGrid(0);
+      animationId = requestAnimationFrame(drawLoop);
     }
 
     mediaQuery.addEventListener('change', (e) => {
+      cancelAnimationFrame(animationId);
       if (e.matches) {
-        if (animationId) cancelAnimationFrame(animationId);
-        renderGrid(0);
+        renderScene(false);
       } else {
         lastTime = performance.now();
-        animationId = requestAnimationFrame(draw);
+        animationId = requestAnimationFrame(drawLoop);
       }
     });
 
     const observer = new MutationObserver(() => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        renderGrid(0);
-      }
+      if (mediaQuery.matches) renderScene(false);
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
