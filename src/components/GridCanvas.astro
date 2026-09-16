@@ -10,28 +10,17 @@
   const canvas = document.getElementById('grid-canvas') as HTMLCanvasElement | null;
   if (canvas) {
     const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let dpr = window.devicePixelRatio || 1;
     let offset = 0;
     let animationId: number;
     let lastTime = 0;
     const fps = 30; // throttle for low CPU usage
     const fpsInterval = 1000 / fps;
+    const gridSize = 40;
 
-    const resize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener('resize', resize, { passive: true });
-
-    const draw = (currentTime: number) => {
-      animationId = requestAnimationFrame(draw);
-      const elapsed = currentTime - lastTime;
-      if (elapsed < fpsInterval) return;
-      lastTime = currentTime - (elapsed % fpsInterval);
-
+    const renderGrid = (offsetY: number) => {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
 
@@ -39,29 +28,68 @@
       ctx.strokeStyle = isLight ? 'rgba(25, 24, 24, 0.05)' : 'rgba(255, 255, 255, 0.04)';
       ctx.lineWidth = 1;
 
-      const gridSize = 40;
-      offset = (offset + 0.3) % gridSize;
-
-      // Vertical lines
+      ctx.beginPath();
       for (let x = 0; x <= width; x += gridSize) {
-        ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
-        ctx.stroke();
       }
-
-      // Horizontal lines moving slightly
-      for (let y = offset; y <= height; y += gridSize) {
-        ctx.beginPath();
+      for (let y = offsetY; y <= height; y += gridSize) {
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
-        ctx.stroke();
       }
+      ctx.stroke();
+    };
+
+    const resize = () => {
+      if (!canvas || !ctx) return;
+      dpr = window.devicePixelRatio || 1;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if (mediaQuery.matches) {
+        renderGrid(0);
+      }
+    };
+
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+
+    const draw = (currentTime: number) => {
+      animationId = requestAnimationFrame(draw);
+      const elapsed = currentTime - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = currentTime - (elapsed % fpsInterval);
+
+      offset = (offset + 0.3) % gridSize;
+      renderGrid(offset);
     };
 
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (!mediaQuery.matches) {
       animationId = requestAnimationFrame(draw);
+    } else {
+      renderGrid(0);
     }
+
+    mediaQuery.addEventListener('change', (e) => {
+      if (e.matches) {
+        if (animationId) cancelAnimationFrame(animationId);
+        renderGrid(0);
+      } else {
+        lastTime = performance.now();
+        animationId = requestAnimationFrame(draw);
+      }
+    });
+
+    const observer = new MutationObserver(() => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        renderGrid(0);
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
 </script>

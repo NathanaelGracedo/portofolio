@@ -41,6 +41,17 @@
       }
     });
 
+    document.addEventListener('mouseleave', () => {
+      if (dot) dot.style.opacity = '0';
+      if (ring) ring.style.opacity = '0';
+      if (target) target.style.opacity = '0';
+      isVisible = false;
+    });
+
+    window.addEventListener('scroll', () => {
+      if (target) target.style.opacity = '0';
+    }, { passive: true });
+
     const animateRing = () => {
       // Lerp smooth follow
       ringX += (mouseX - ringX) * 0.18;
@@ -57,7 +68,8 @@
     const lockables = 'a, button, input, .hud-card, .interactive-target';
     document.addEventListener('mouseover', (e) => {
       const el = (e.target as HTMLElement)?.closest(lockables) as HTMLElement | null;
-      if (el && target) {
+      const related = (e.relatedTarget as HTMLElement | null)?.closest(lockables) as HTMLElement | null;
+      if (el && el !== related && target) {
         const rect = el.getBoundingClientRect();
         target.style.top = `${rect.top}px`;
         target.style.left = `${rect.left}px`;
@@ -69,8 +81,9 @@
     });
 
     document.addEventListener('mouseout', (e) => {
-      const el = (e.target as HTMLElement)?.closest(lockables);
-      if (el && target) {
+      const el = (e.target as HTMLElement)?.closest(lockables) as HTMLElement | null;
+      const related = (e.relatedTarget as HTMLElement | null)?.closest(lockables) as HTMLElement | null;
+      if (el && el !== related && target) {
         target.style.opacity = '0';
         window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'NORMAL' }));
       }
