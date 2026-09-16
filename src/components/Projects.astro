@@ -1,0 +1,156 @@
+---
+interface ProjectLink {
+  label: string;
+  url: string;
+}
+
+interface ProjectItem {
+  title: string;
+  featured: boolean;
+  tag: string;
+  description: string;
+  badges: string[];
+  links: ProjectLink[];
+}
+
+const projects: ProjectItem[] = [
+  {
+    title: "Resurva Platform",
+    featured: true,
+    tag: "Multi-Repo Ecosystem // Nexa Code Studio",
+    description: "Modern sustainability and resource management ecosystem consisting of a Next.js web application, Flutter mobile app, and microservices backend. Contributed as a community core contributor across all 3 repositories.",
+    badges: ["Next.js", "Flutter", "Dart", "TypeScript", "REST API", "Community Contributor"],
+    links: [
+      { label: "Frontend Web", url: "https://github.com/Nexa-Code-Studio/resurva_web" },
+      { label: "Mobile App", url: "https://github.com/Nexa-Code-Studio/resurva_mobile" },
+      { label: "Backend API", url: "https://github.com/Nexa-Code-Studio/resurva_backend" }
+    ]
+  },
+  {
+    title: "Trashware IoT",
+    featured: false,
+    tag: "Smart Waste Management",
+    description: "IoT-powered campus waste monitoring system integrating Cloud Computing and Big Data analytics to monitor bin capacity in real-time and optimize garbage collection logistics.",
+    badges: ["IoT", "Flutter", "Cloud Computing", "Big Data", "Real-time"],
+    links: [
+      { label: "GitHub Repo", url: "https://github.com/soulqan/trashware" }
+    ]
+  },
+  {
+    title: "Pentagram App",
+    featured: false,
+    tag: "Mobile Citizen & Community Management",
+    description: "Neighborhood administration mobile application with neighborhood finances, group chat, and citizen onboarding integrated with ID Card OCR using Machine Learning.",
+    badges: ["Flutter", "Dart", "Firebase", "Python", "OCR / ML"],
+    links: [
+      { label: "GitHub Repo", url: "https://github.com/Ruphasa/Four-Heavenly-Principle" }
+    ]
+  },
+  {
+    title: "LaporSana",
+    featured: false,
+    tag: "Campus Reporting & Competition Recommender",
+    description: "Campus facility damage reporting system combined with student competition recommendations based on machine learning classification algorithms (KNN & Naive Bayes).",
+    badges: ["Laravel", "PHP", "MySQL", "KNN / Naive Bayes"],
+    links: [
+      { label: "GitHub Repo", url: "https://github.com/AlexanderDev2004/LaporSana" }
+    ]
+  }
+];
+---
+<section id="projects" class="py-20 px-6 relative border-t border-[var(--border-color)]">
+  <div class="max-w-5xl mx-auto relative">
+    <!-- Huge Watermark Number -->
+    <div class="absolute -top-10 left-0 watermark-number" aria-hidden="true">02</div>
+
+    <div class="relative z-10 mb-12">
+      <p class="hud-comment mb-2">// section.projects</p>
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Featured Engineering</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+      {projects.map((proj) => (
+        <div class={`project-card hud-card rounded-xl p-6 sm:p-8 flex flex-col justify-between ${proj.featured ? 'md:col-span-2' : ''}`}>
+          <div class="relative z-10">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="font-mono text-[11px] text-[var(--accent-orange)] font-medium">
+                // {proj.tag}
+              </span>
+              {proj.featured && (
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--accent-blue-subtle)] text-[var(--accent-blue)] border border-[var(--accent-blue)]/30">
+                  Featured
+                </span>
+              )}
+            </div>
+
+            <h3 class="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mb-3">{proj.title}</h3>
+            <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+              {proj.description}
+            </p>
+
+            <div class="flex flex-wrap gap-2 mb-6">
+              {proj.badges.map((badge) => (
+                <span class="px-2 py-0.5 rounded font-mono text-[11px] bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)]">
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <!-- Action Links -->
+          <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-[var(--border-color)] font-mono text-xs relative z-10">
+            {proj.links.map((link) => (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--bg-secondary)] hover:bg-[var(--accent-blue)] hover:text-white border border-[var(--border-color)] transition-all duration-200"
+              >
+                <span>{link.label}</span>
+                <span class="text-[10px]">↗</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .project-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(
+      500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      var(--accent-blue-subtle),
+      transparent 45%
+    );
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .project-card:hover::before {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Mouse tracking border glow for project cards
+  document.querySelectorAll('.project-card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = (card as HTMLElement).getBoundingClientRect();
+      const x = (((e as MouseEvent).clientX - rect.left) / rect.width) * 100;
+      const y = (((e as MouseEvent).clientY - rect.top) / rect.height) * 100;
+      (card as HTMLElement).style.setProperty('--mouse-x', `${x}%`);
+      (card as HTMLElement).style.setProperty('--mouse-y', `${y}%`);
+    });
+  });
+</script>
