@@ -98,7 +98,7 @@
       }
       ctx.stroke();
 
-      // 2. Update and draw particles
+      // 2. Update particles & draw connections
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
@@ -115,19 +115,13 @@
           const dxM = mouseX - p.x;
           const dyM = mouseY - p.y;
           const distM = Math.sqrt(dxM * dxM + dyM * dyM);
-          if (distM < 120) {
+          if (distM < 120 && distM > 0.1) {
             p.x += (dxM / distM) * 0.3;
             p.y += (dyM / distM) * 0.3;
           }
         }
 
-        // Draw particle dot
-        ctx.fillStyle = nodeColor;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 3. Connect nearby particles
+        // Connect nearby particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
@@ -159,6 +153,16 @@
           ctx.stroke();
         }
       }
+
+      // 3. Batch draw all particle dots in a single path and fill call
+      ctx.fillStyle = nodeColor;
+      ctx.beginPath();
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.moveTo(p.x + p.size, p.y);
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      }
+      ctx.fill();
     };
 
     resize();

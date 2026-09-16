@@ -45,7 +45,16 @@ const {
     })();
   </script>
 </head>
-<body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+<body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] relative">
+  <!-- Ambient Blurred Glowing Orbs -->
+  <div class="fixed top-[10%] right-[5%] w-96 h-96 rounded-full bg-[var(--accent-blue)]/12 blur-3xl pointer-events-none z-0 ambient-orb-1" aria-hidden="true"></div>
+  <div class="fixed bottom-[15%] left-[5%] w-80 h-80 rounded-full bg-[var(--accent-orange)]/8 blur-3xl pointer-events-none z-0 ambient-orb-2" aria-hidden="true"></div>
+
+  <!-- Decorative HUD Layout Corner Crosshairs -->
+  <div class="fixed top-16 left-6 font-mono text-[10px] text-[var(--text-muted)] opacity-30 select-none pointer-events-none hidden xl:block" aria-hidden="true">+</div>
+  <div class="fixed top-16 right-6 font-mono text-[10px] text-[var(--text-muted)] opacity-30 select-none pointer-events-none hidden xl:block" aria-hidden="true">+</div>
+  <div class="fixed bottom-12 left-6 font-mono text-[10px] text-[var(--text-muted)] opacity-30 select-none pointer-events-none hidden xl:block" aria-hidden="true">// LOC: 7.9S · 112.6E</div>
+
   <GridCanvas />
   <CustomCursor />
   <TopNav />
