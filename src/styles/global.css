@@ -56,6 +56,20 @@
   code, kbd, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  @media (hover: hover) and (pointer: fine) {
+    html,
+    body,
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    [role="button"],
+    .hud-card {
+      cursor: none !important;
+    }
+  }
 }
 
 /* HUD System Annotations */
