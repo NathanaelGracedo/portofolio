@@ -1,11 +1,14 @@
 ---
 ---
 <div id="hud-cursor" class="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden="true">
-  <!-- Precision dot -->
-  <div id="cursor-dot" class="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200 opacity-0 pointer-events-none"></div>
-  
-  <!-- Smooth trailing ring -->
-  <div id="cursor-ring" class="fixed top-0 left-0 w-7 h-7 rounded-full border border-[var(--accent-blue)]/60 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200 opacity-0 pointer-events-none"></div>
+  <!-- HUD Reticle: Precision Center Dot + Concentric Outer Ring -->
+  <div id="cursor-reticle" class="pointer-events-none opacity-0">
+    <!-- Concentric Outer Ring (32px) -->
+    <div id="cursor-ring" class="w-8 h-8 rounded-full border border-[var(--accent-blue)]/60 flex items-center justify-center transition-transform duration-150 ease-out">
+      <!-- Precision Solid Center Dot (Always dead-center) -->
+      <div id="cursor-dot" class="w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)]"></div>
+    </div>
+  </div>
 
   <!-- 4 Corner Targets [ ] for hovered interactive items -->
   <div id="cursor-target" class="fixed pointer-events-none transition-all duration-150 opacity-0">
@@ -25,36 +28,60 @@
       display: block;
     }
   }
+
+  #cursor-reticle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    margin-top: -16px;
+    margin-left: -16px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    will-change: transform;
+  }
 </style>
 
 <script>
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    const dot = document.getElementById('cursor-dot');
+    const reticle = document.getElementById('cursor-reticle');
     const ring = document.getElementById('cursor-ring');
     const target = document.getElementById('cursor-target');
 
     let mouseX = -100, mouseY = -100;
-    let ringX = -100, ringY = -100;
     let isVisible = false;
+    let isHovered = false;
 
     window.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
 
-      if (!isVisible && dot && ring) {
-        dot.style.opacity = '1';
-        ring.style.opacity = '1';
+      if (!isVisible && reticle) {
+        reticle.style.opacity = '1';
         isVisible = true;
       }
 
-      if (dot) {
-        dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+      if (reticle) {
+        reticle.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      }
+    });
+
+    window.addEventListener('mousedown', () => {
+      if (ring) {
+        ring.style.transform = 'scale(0.85)';
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (ring) {
+        ring.style.transform = isHovered ? 'scale(1.25)' : 'scale(1)';
       }
     });
 
     document.addEventListener('mouseleave', () => {
-      if (dot) dot.style.opacity = '0';
-      if (ring) ring.style.opacity = '0';
+      if (reticle) reticle.style.opacity = '0';
       if (target) target.style.opacity = '0';
       isVisible = false;
     });
@@ -63,30 +90,25 @@
       if (target) target.style.opacity = '0';
     }, { passive: true });
 
-    const animateRing = () => {
-      // Lerp smooth follow
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-
-      if (ring) {
-        ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-      }
-      requestAnimationFrame(animateRing);
-    };
-    requestAnimationFrame(animateRing);
-
     // Magnetic target locking on interactive elements
-    const lockables = 'a, button, input, .hud-card, .interactive-target';
+    const lockables = 'a, button, input, .hud-card, .interactive-target, [role="button"]';
     document.addEventListener('mouseover', (e) => {
       const el = (e.target as HTMLElement)?.closest(lockables) as HTMLElement | null;
       const related = (e.relatedTarget as HTMLElement | null)?.closest(lockables) as HTMLElement | null;
-      if (el && el !== related && target) {
-        const rect = el.getBoundingClientRect();
-        target.style.top = `${rect.top}px`;
-        target.style.left = `${rect.left}px`;
-        target.style.width = `${rect.width}px`;
-        target.style.height = `${rect.height}px`;
-        target.style.opacity = '1';
+      if (el && el !== related) {
+        isHovered = true;
+        if (ring) {
+          ring.style.transform = 'scale(1.25)';
+          ring.style.borderColor = 'var(--accent-blue)';
+        }
+        if (target) {
+          const rect = el.getBoundingClientRect();
+          target.style.top = `${rect.top}px`;
+          target.style.left = `${rect.left}px`;
+          target.style.width = `${rect.width}px`;
+          target.style.height = `${rect.height}px`;
+          target.style.opacity = '1';
+        }
         window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'HOVER' }));
       }
     });
@@ -94,8 +116,15 @@
     document.addEventListener('mouseout', (e) => {
       const el = (e.target as HTMLElement)?.closest(lockables) as HTMLElement | null;
       const related = (e.relatedTarget as HTMLElement | null)?.closest(lockables) as HTMLElement | null;
-      if (el && el !== related && target) {
-        target.style.opacity = '0';
+      if (el && el !== related) {
+        isHovered = false;
+        if (ring) {
+          ring.style.transform = 'scale(1)';
+          ring.style.borderColor = '';
+        }
+        if (target) {
+          target.style.opacity = '0';
+        }
         window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'NORMAL' }));
       }
     });
