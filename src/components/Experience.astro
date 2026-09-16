@@ -1,0 +1,68 @@
+---
+interface ExperienceItem {
+  role: string;
+  company: string;
+  period: string;
+  location: string;
+  type: string;
+  description: string;
+  skills: string[];
+}
+
+const experiences: ExperienceItem[] = [
+  {
+    role: "Mobile Developer Intern",
+    company: "PT SIDIGS",
+    period: "Jun 2022 — Nov 2022",
+    location: "Indonesia",
+    type: "Industry Internship",
+    description: "Worked as a Mobile Developer Intern focused on cross-platform application development using Flutter and Dart. Translated business requirements and UI/UX design specifications into interactive, pixel-accurate, and responsive interfaces across various mobile screen densities.",
+    skills: ["Flutter", "Dart", "Mobile Development", "UI/UX Implementation", "REST API"]
+  }
+];
+---
+<section id="experience" class="py-20 px-6 relative border-t border-[var(--border-color)]">
+  <div class="max-w-5xl mx-auto relative">
+    <!-- Huge Watermark Number -->
+    <div class="absolute -top-10 left-0 watermark-number">01</div>
+
+    <div class="relative z-10 mb-12">
+      <p class="hud-comment mb-2">// section.experience</p>
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Work History</h2>
+    </div>
+
+    <!-- Timeline Container -->
+    <div class="space-y-6 relative z-10">
+      {experiences.map((exp) => (
+        <div class="hud-card rounded-xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg sm:text-xl font-bold text-[var(--text-primary)]">{exp.role}</h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--accent-blue-subtle)] text-[var(--accent-blue)] border border-[var(--accent-blue)]/30">
+                  {exp.type}
+                </span>
+              </div>
+              <p class="text-sm font-mono text-[var(--accent-orange)] font-medium mt-1">{exp.company}</p>
+            </div>
+            <div class="font-mono text-xs text-[var(--text-muted)] sm:text-right">
+              {exp.period}
+            </div>
+          </div>
+
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+            {exp.description}
+          </p>
+
+          <div class="flex flex-wrap gap-2">
+            {exp.skills.map((skill) => (
+              <span class="px-2.5 py-1 rounded font-mono text-xs bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)]">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

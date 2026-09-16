@@ -1,0 +1,55 @@
+---
+interface EducationItem {
+  institution: string;
+  degree: string;
+  period: string;
+  status: string;
+  notes: string;
+}
+
+const educations: EducationItem[] = [
+  {
+    institution: "Politeknik Negeri Malang",
+    degree: "Sarjana Terapan (D4) Teknik Informatika",
+    period: "2022 — Present",
+    status: "Undergraduate",
+    notes: "Focused on Artificial Intelligence, mobile software engineering, and modern full-stack web architectures."
+  },
+  {
+    institution: "SMAK Santa Maria Malang",
+    degree: "Matematika dan Ilmu Pengetahuan Alam (MIPA)",
+    period: "2019 — 2022",
+    status: "Graduated",
+    notes: "Foundation in science, algorithms, mathematics, and computer literacy."
+  }
+];
+---
+<section id="education" class="py-20 px-6 relative border-t border-[var(--border-color)]">
+  <div class="max-w-5xl mx-auto relative">
+    <!-- Huge Watermark Number -->
+    <div class="absolute -top-10 left-0 watermark-number">03</div>
+
+    <div class="relative z-10 mb-12">
+      <p class="hud-comment mb-2">// section.education</p>
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Academic Background</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+      {educations.map((edu) => (
+        <div class="hud-card rounded-xl p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3 font-mono text-xs">
+              <span class="px-2 py-0.5 rounded bg-[var(--accent-orange-subtle)] text-[var(--accent-orange)] border border-[var(--accent-orange)]/30">
+                {edu.status}
+              </span>
+              <span class="text-[var(--text-muted)]">{edu.period}</span>
+            </div>
+            <h3 class="text-lg font-bold text-[var(--text-primary)] mb-1">{edu.institution}</h3>
+            <p class="text-sm font-medium text-[var(--accent-blue)] mb-4">{edu.degree}</p>
+            <p class="text-xs text-[var(--text-secondary)] leading-relaxed">{edu.notes}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
