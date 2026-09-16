@@ -40,6 +40,11 @@
         [<span id="theme-icon">🌓</span> <span class="hidden sm:inline">Theme</span>]
       </button>
 
+      <!-- Language Switcher Button -->
+      <button id="sb-lang-toggle-btn" type="button" class="hover:text-[var(--accent-blue)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer font-mono" title="Toggle Language (L)">
+        [<span id="sb-lang-label">EN</span>]
+      </button>
+
       <!-- Shortcuts Trigger Button -->
       <button id="shortcuts-toggle-btn" type="button" class="hover:text-[var(--accent-blue)] transition-colors px-1.5 py-0.5 border border-[var(--border-color)] rounded bg-[var(--bg-surface)] cursor-pointer" title="Keyboard Shortcuts (?)">
         [?]
@@ -133,5 +138,22 @@
     if (e.key === 't' || e.key === 'T') {
       toggleTheme();
     }
+  });
+
+  // 5. Language Sync in Status Bar
+  const sbLangLabel = document.getElementById('sb-lang-label');
+  const sbLangBtn = document.getElementById('sb-lang-toggle-btn');
+  const updateSbLang = (lang: string) => {
+    if (sbLangLabel) sbLangLabel.textContent = lang.toUpperCase();
+  };
+  const initLang = document.documentElement.getAttribute('data-lang') || 'en';
+  updateSbLang(initLang);
+
+  window.addEventListener('lang-change', ((e: CustomEvent) => {
+    if (e.detail) updateSbLang(e.detail);
+  }) as EventListener);
+
+  sbLangBtn?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('lang-toggle-trigger'));
   });
 </script>

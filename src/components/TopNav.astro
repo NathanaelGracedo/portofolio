@@ -11,19 +11,27 @@
 
     <!-- Desktop Menu -->
     <div class="hidden md:flex items-center gap-6 font-mono text-xs">
-      <a href="#experience" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 01.exp</a>
-      <a href="#projects" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 02.projects</a>
-      <a href="#education" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 03.edu</a>
-      <a href="#skills" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 04.skills</a>
-      <a href="#contact" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 05.contact</a>
+      <a href="#experience" data-i18n="nav.exp" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 01.exp</a>
+      <a href="#projects" data-i18n="nav.projects" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 02.projects</a>
+      <a href="#education" data-i18n="nav.edu" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 03.edu</a>
+      <a href="#skills" data-i18n="nav.skills" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 04.skills</a>
+      <a href="#contact" data-i18n="nav.contact" class="text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition-colors">// 05.contact</a>
     </div>
 
-    <!-- Right status indicator -->
-    <div class="hidden sm:flex items-center gap-3">
-      <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] text-[11px] font-mono text-[var(--text-secondary)]">
-        <span class="w-2 h-2 rounded-full bg-[var(--accent-green)] animate-pulse"></span>
-        <span>Open for Intern</span>
-      </div>
+    <!-- Right Language Switcher (Replaces Open for Intern badge) -->
+    <div class="hidden sm:flex items-center">
+      <button 
+        id="lang-toggle-btn" 
+        type="button" 
+        class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] text-[11px] font-mono text-[var(--text-secondary)] hover:border-[var(--accent-blue)] hover:text-[var(--text-primary)] transition-all cursor-pointer" 
+        aria-label="Switch Language (ID / EN)"
+        title="Switch Language (L)"
+      >
+        <span class="text-xs">🌐</span>
+        <span id="lang-btn-id" class="transition-colors">ID</span>
+        <span class="text-[var(--border-color)]">/</span>
+        <span id="lang-btn-en" class="transition-colors font-bold text-[var(--accent-blue)]">EN</span>
+      </button>
     </div>
 
     <!-- Mobile Hamburger Button -->
@@ -37,11 +45,26 @@
   <!-- Mobile Drawer -->
   <div id="mobile-drawer" class="md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out border-b border-[var(--border-color)] bg-[var(--bg-primary)]" inert>
     <div class="px-6 py-4 flex flex-col gap-3 font-mono text-xs">
-      <a href="#experience" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 01.experience</a>
-      <a href="#projects" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 02.projects</a>
-      <a href="#education" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 03.education</a>
-      <a href="#skills" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 04.skills</a>
-      <a href="#contact" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 05.contact</a>
+      <a href="#experience" data-i18n="nav.exp" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 01.experience</a>
+      <a href="#projects" data-i18n="nav.projects" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 02.projects</a>
+      <a href="#education" data-i18n="nav.edu" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 03.education</a>
+      <a href="#skills" data-i18n="nav.skills" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 04.skills</a>
+      <a href="#contact" data-i18n="nav.contact" class="mobile-link text-[var(--text-secondary)] hover:text-[var(--accent-blue)] py-1">// 05.contact</a>
+      
+      <div class="pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
+        <span data-i18n="nav.langLabel" class="text-[var(--text-muted)] text-[11px]">Language:</span>
+        <button 
+          id="mobile-lang-toggle-btn" 
+          type="button" 
+          class="flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] text-[11px] font-mono text-[var(--text-secondary)] hover:border-[var(--accent-blue)] transition-all cursor-pointer"
+          aria-label="Switch Language (ID / EN)"
+        >
+          <span class="text-xs">🌐</span>
+          <span id="mobile-lang-btn-id" class="transition-colors">ID</span>
+          <span class="text-[var(--border-color)]">/</span>
+          <span id="mobile-lang-btn-en" class="transition-colors font-bold text-[var(--accent-blue)]">EN</span>
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -54,30 +77,33 @@
   const bar3 = document.getElementById('bar-3');
   let open = false;
 
-  const toggle = (state) => {
+  const toggle = (state?: boolean) => {
     open = state !== undefined ? state : !open;
     toggleBtn?.setAttribute('aria-expanded', String(open));
     if (drawer && bar1 && bar2 && bar3) {
       if (open) {
-        drawer.removeAttribute('inert');
         drawer.style.maxHeight = `${drawer.scrollHeight}px`;
-        bar1.style.transform = 'translateY(5px) rotate(45deg)';
+        drawer.removeAttribute('inert');
+        bar1.style.transform = 'translateY(8px) rotate(45deg)';
         bar2.style.opacity = '0';
-        bar3.style.transform = 'translateY(-5px) rotate(-45deg)';
+        bar3.style.transform = 'translateY(-8px) rotate(-45deg)';
         bar3.style.width = '1.25rem';
       } else {
-        drawer.setAttribute('inert', '');
         drawer.style.maxHeight = '0px';
-        bar1.style.transform = '';
+        drawer.setAttribute('inert', '');
+        bar1.style.transform = 'none';
         bar2.style.opacity = '1';
-        bar3.style.transform = '';
+        bar3.style.transform = 'none';
         bar3.style.width = '0.75rem';
       }
     }
   };
 
   toggleBtn?.addEventListener('click', () => toggle());
-  document.querySelectorAll('.mobile-link').forEach((link) => {
+
+  // Close drawer when any mobile link is clicked
+  const mobileLinks = document.querySelectorAll('.mobile-link');
+  mobileLinks.forEach((link) => {
     link.addEventListener('click', () => toggle(false));
   });
 </script>

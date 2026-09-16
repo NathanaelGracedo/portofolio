@@ -6,7 +6,7 @@
     <div class="flex items-center justify-between pb-4 mb-4 border-b border-[var(--border-color)]">
       <div class="flex items-center gap-2">
         <span class="text-[var(--accent-blue)] font-bold">//</span>
-        <h3 id="shortcuts-title" class="font-bold text-sm tracking-wide text-[var(--text-primary)]">keyboard.shortcuts</h3>
+        <h3 id="shortcuts-title" data-i18n="shortcuts.title" class="font-bold text-sm tracking-wide text-[var(--text-primary)]">keyboard.shortcuts</h3>
       </div>
       <button id="close-shortcuts-btn" type="button" class="p-1 hover:text-[var(--accent-orange)] text-[var(--text-muted)] cursor-pointer" aria-label="Close modal">
         ✕
@@ -16,7 +16,7 @@
     <!-- Shortcuts Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
       <div>
-        <p class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Navigation</p>
+        <p data-i18n="shortcuts.navHeading" class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Navigation</p>
         <ul class="space-y-2">
           <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Hero</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">1</kbd></li>
           <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Experience</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">2</kbd></li>
@@ -28,18 +28,19 @@
       </div>
 
       <div>
-        <p class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Actions</p>
+        <p data-i18n="shortcuts.actionsHeading" class="text-[var(--accent-orange)] text-[10px] uppercase font-bold tracking-wider mb-2">Actions</p>
         <ul class="space-y-2">
-          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Toggle Theme</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">T</kbd></li>
-          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Scroll to Top</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">G</kbd></li>
-          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Scroll to Bottom</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Shift+G</kbd></li>
-          <li class="flex justify-between items-center"><span class="text-[var(--text-secondary)]">Close Dialog</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Esc</kbd></li>
+          <li class="flex justify-between items-center"><span data-i18n="shortcuts.theme" class="text-[var(--text-secondary)]">Toggle Theme</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">T</kbd></li>
+          <li class="flex justify-between items-center"><span data-i18n="shortcuts.lang" class="text-[var(--text-secondary)]">Toggle Language</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">L</kbd></li>
+          <li class="flex justify-between items-center"><span data-i18n="shortcuts.scrollTop" class="text-[var(--text-secondary)]">Scroll to Top</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">G</kbd></li>
+          <li class="flex justify-between items-center"><span data-i18n="shortcuts.scrollBottom" class="text-[var(--text-secondary)]">Scroll to Bottom</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Shift+G</kbd></li>
+          <li class="flex justify-between items-center"><span data-i18n="shortcuts.close" class="text-[var(--text-secondary)]">Close Dialog</span><kbd class="px-2 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">Esc</kbd></li>
         </ul>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="pt-3 border-t border-[var(--border-color)] text-center text-[10px] text-[var(--text-muted)]">
+    <div data-i18n="shortcuts.footer" class="pt-3 border-t border-[var(--border-color)] text-center text-[10px] text-[var(--text-muted)]">
       Press <kbd class="px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] border border-[var(--border-color)]">?</kbd> anywhere to toggle this menu.
     </div>
   </div>

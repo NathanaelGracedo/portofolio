@@ -13,8 +13,8 @@ interface Props {
 }
 
 const {
-  title = "Nathanael Juan Gracedo — AI & Software Developer",
-  description = "Portfolio of Nathanael Juan Gracedo — Informatics Engineering undergraduate at Politeknik Negeri Malang focused on AI, Web, and Mobile development."
+  title = "Nathanael Juan Gracedo — Software Developer",
+  description = "Portfolio of Nathanael Juan Gracedo — Informatics Engineering undergraduate at Politeknik Negeri Malang focused on Web and Mobile development."
 } = Astro.props;
 ---
 <!DOCTYPE html>
@@ -31,7 +31,7 @@ const {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Anti-FOUC Theme Script -->
+  <!-- Anti-FOUC Theme & Language Script -->
   <script is:inline>
     (function () {
       try {
@@ -39,8 +39,14 @@ const {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+
+        const savedLang = localStorage.getItem('lang') || 'en';
+        document.documentElement.setAttribute('data-lang', savedLang);
+        document.documentElement.lang = savedLang;
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-lang', 'en');
+        document.documentElement.lang = 'en';
       }
     })();
   </script>
@@ -62,5 +68,10 @@ const {
   <Footer />
   <StatusBar />
   <ShortcutsModal />
+
+  <script>
+    import { initI18n } from '../scripts/i18n';
+    initI18n();
+  </script>
 </body>
 </html>

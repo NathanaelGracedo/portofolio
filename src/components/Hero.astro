@@ -10,12 +10,12 @@ import profileImg from '../assets/profile.png';
       <!-- Status Badge -->
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] mb-4 backdrop-blur-sm">
         <span class="w-2 h-2 rounded-full bg-[var(--accent-green)] animate-pulse"></span>
-        <span class="text-xs font-mono text-[var(--text-secondary)]">Available for Internship & Opportunities</span>
+        <span data-i18n="hero.badge" class="text-xs font-mono text-[var(--text-secondary)]">Available for Opportunities</span>
       </div>
 
       <!-- HUD Pre-title -->
       <div class="flex items-center gap-2 mb-4">
-        <span class="hud-comment">// system.init</span>
+        <span data-i18n="hero.systemInit" class="hud-comment">// system.init</span>
         <span class="text-[var(--border-color)]">/</span>
         <span class="hud-tag">portofolio v2.0</span>
       </div>
@@ -26,37 +26,37 @@ import profileImg from '../assets/profile.png';
         <span class="text-[var(--accent-blue)]">Juan Gracedo</span>
       </h1>
 
-      <p class="font-mono text-sm sm:text-base text-[var(--accent-orange)] font-medium mb-6">
+      <p data-i18n="hero.role" class="font-mono text-sm sm:text-base text-[var(--accent-orange)] font-medium mb-6">
         Software Developer
       </p>
 
       <!-- Bio Paragraph -->
-      <p class="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed mb-8 max-w-xl">
-        Undergraduate student in Informatics Engineering (<span class="text-[var(--text-primary)] font-semibold">Sarjana Terapan Teknik Informatika</span>) at Politeknik Negeri Malang with a strong focus on Artificial Intelligence and software development. Experienced in building scalable cross-platform mobile and web applications with clean, responsive, and human-centric UI/UX.
+      <p data-i18n="hero.bio" class="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed mb-8 max-w-xl">
+        Undergraduate student in Informatics Engineering (<span class="text-[var(--text-primary)] font-semibold">Sarjana Terapan Teknik Informatika</span>) at Politeknik Negeri Malang with a strong focus on software development and Artificial Intelligence. Experienced in building scalable cross-platform mobile and web applications with clean, responsive, and human-centric UI/UX.
       </p>
 
       <!-- Metric Cards Grid -->
       <div class="grid grid-cols-3 gap-3 w-full max-w-xl mb-8">
         <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
           <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)] counter" data-target="4">0</div>
-          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Highlighted Projects</p>
+          <p data-i18n="hero.projectsCount" class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Highlighted Projects</p>
         </div>
         <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
           <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--accent-blue)] counter" data-target="1">0</div>
-          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Internship Experience</p>
+          <p data-i18n="hero.internshipCount" class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Internship Experience</p>
         </div>
         <div class="hud-card rounded-lg p-3 sm:p-4 text-center">
           <div class="font-display text-2xl sm:text-3xl font-bold text-[var(--text-primary)] counter" data-target="10">0</div>
-          <p class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Tech Stacks Mastered</p>
+          <p data-i18n="hero.techCount" class="font-mono text-[10px] sm:text-xs text-[var(--text-muted)] mt-1">Tech Stacks Mastered</p>
         </div>
       </div>
 
       <!-- CTA Buttons -->
       <div class="flex flex-wrap items-center gap-4 font-mono text-xs">
-        <a href="#projects" class="px-5 py-2.5 rounded-lg bg-[var(--accent-blue)] text-white font-medium hover:opacity-90 transition-opacity">
+        <a href="#projects" data-i18n="hero.ctaProjects" class="px-5 py-2.5 rounded-lg bg-[var(--accent-blue)] text-white font-medium hover:opacity-90 transition-opacity">
           View Projects →
         </a>
-        <a href="#contact" class="px-5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors">
+        <a href="#contact" data-i18n="hero.ctaContact" class="px-5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-colors">
           Get in Touch
         </a>
       </div>

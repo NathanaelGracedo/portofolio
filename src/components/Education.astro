@@ -1,5 +1,6 @@
 ---
 interface EducationItem {
+  id: string;
   institution: string;
   degree: string;
   period: string;
@@ -9,6 +10,7 @@ interface EducationItem {
 
 const educations: EducationItem[] = [
   {
+    id: "polinema",
     institution: "Politeknik Negeri Malang",
     degree: "Sarjana Terapan (D4) Teknik Informatika",
     period: "2022 — Present",
@@ -16,6 +18,7 @@ const educations: EducationItem[] = [
     notes: "Focused on mobile software engineering, modern web architectures, algorithms, and distributed systems."
   },
   {
+    id: "smk",
     institution: "SMK Telkom Shandy Putra Malang",
     degree: "Rekayasa Perangkat Lunak (RPL)",
     period: "2019 — 2022",
@@ -30,8 +33,8 @@ const educations: EducationItem[] = [
     <div class="absolute -top-10 left-0 watermark-number" aria-hidden="true">03</div>
 
     <div class="relative z-10 mb-12">
-      <p class="hud-comment mb-2">// section.education</p>
-      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Academic Background</h2>
+      <p data-i18n="education.tag" class="hud-comment mb-2">// section.education</p>
+      <h2 data-i18n="education.title" class="text-3xl sm:text-4xl font-bold tracking-tight">Academic Background</h2>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
@@ -39,14 +42,14 @@ const educations: EducationItem[] = [
         <div class="hud-card rounded-xl p-6 sm:p-8 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3 font-mono text-xs">
-              <span class="px-2 py-0.5 rounded bg-[var(--accent-orange-subtle)] text-[var(--accent-orange)] border border-[var(--accent-orange)]/30">
+              <span data-i18n={`education.${edu.id}Status`} class="px-2 py-0.5 rounded bg-[var(--accent-orange-subtle)] text-[var(--accent-orange)] border border-[var(--accent-orange)]/30">
                 {edu.status}
               </span>
               <span class="text-[var(--text-muted)]">{edu.period}</span>
             </div>
             <h3 class="text-lg font-bold text-[var(--text-primary)] mb-1">{edu.institution}</h3>
-            <p class="text-sm font-medium text-[var(--accent-blue)] mb-4">{edu.degree}</p>
-            <p class="text-xs text-[var(--text-secondary)] leading-relaxed">{edu.notes}</p>
+            <p data-i18n={`education.${edu.id}Degree`} class="text-sm font-medium text-[var(--accent-blue)] mb-4">{edu.degree}</p>
+            <p data-i18n={`education.${edu.id}Notes`} class="text-xs text-[var(--text-secondary)] leading-relaxed">{edu.notes}</p>
           </div>
         </div>
       ))}

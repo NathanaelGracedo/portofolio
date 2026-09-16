@@ -5,6 +5,7 @@ interface ProjectLink {
 }
 
 interface ProjectItem {
+  id: string;
   title: string;
   featured: boolean;
   tag: string;
@@ -15,6 +16,7 @@ interface ProjectItem {
 
 const projects: ProjectItem[] = [
   {
+    id: "resurva",
     title: "Resurva Platform",
     featured: true,
     tag: "Multi-Repo Ecosystem // Nexa Code Studio",
@@ -27,6 +29,7 @@ const projects: ProjectItem[] = [
     ]
   },
   {
+    id: "trashware",
     title: "Trashware IoT",
     featured: false,
     tag: "Smart Waste Management",
@@ -37,6 +40,7 @@ const projects: ProjectItem[] = [
     ]
   },
   {
+    id: "pentagram",
     title: "Pentagram App",
     featured: false,
     tag: "Mobile Citizen & Community Management",
@@ -47,6 +51,7 @@ const projects: ProjectItem[] = [
     ]
   },
   {
+    id: "laporsana",
     title: "LaporSana",
     featured: false,
     tag: "Campus Reporting & Competition Recommender",
@@ -64,8 +69,8 @@ const projects: ProjectItem[] = [
     <div class="absolute -top-10 left-0 watermark-number" aria-hidden="true">02</div>
 
     <div class="relative z-10 mb-12">
-      <p class="hud-comment mb-2">// section.projects</p>
-      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Featured Engineering</h2>
+      <p data-i18n="projects.tag" class="hud-comment mb-2">// section.projects</p>
+      <h2 data-i18n="projects.title" class="text-3xl sm:text-4xl font-bold tracking-tight">Featured Engineering</h2>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
@@ -73,7 +78,7 @@ const projects: ProjectItem[] = [
         <div class={`project-card hud-card rounded-xl p-6 sm:p-8 flex flex-col justify-between ${proj.featured ? 'md:col-span-2' : ''}`}>
           <div class="relative z-10">
             <div class="flex items-center justify-between gap-2 mb-3">
-              <span class="font-mono text-[11px] text-[var(--accent-orange)] font-medium">
+              <span data-i18n={`projects.${proj.id}Tag`} class="font-mono text-[11px] text-[var(--accent-orange)] font-medium">
                 // {proj.tag}
               </span>
               {proj.featured && (
@@ -84,7 +89,7 @@ const projects: ProjectItem[] = [
             </div>
 
             <h3 class="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mb-3">{proj.title}</h3>
-            <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+            <p data-i18n={`projects.${proj.id}Desc`} class="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
               {proj.description}
             </p>
 
