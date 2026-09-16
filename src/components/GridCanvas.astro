@@ -1,0 +1,67 @@
+---
+---
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+  <canvas id="grid-canvas" class="w-full h-full block opacity-40"></canvas>
+  <!-- Subtle top and bottom gradient fades -->
+  <div class="absolute inset-0 bg-gradient-to-b from-[var(--bg-primary)] via-transparent to-[var(--bg-primary)] opacity-80 pointer-events-none"></div>
+</div>
+
+<script>
+  const canvas = document.getElementById('grid-canvas') as HTMLCanvasElement | null;
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+    let offset = 0;
+    let animationId: number;
+    let lastTime = 0;
+    const fps = 30; // throttle for low CPU usage
+    const fpsInterval = 1000 / fps;
+
+    const resize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', resize, { passive: true });
+
+    const draw = (currentTime: number) => {
+      animationId = requestAnimationFrame(draw);
+      const elapsed = currentTime - lastTime;
+      if (elapsed < fpsInterval) return;
+      lastTime = currentTime - (elapsed % fpsInterval);
+
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      ctx.strokeStyle = isLight ? 'rgba(25, 24, 24, 0.05)' : 'rgba(255, 255, 255, 0.04)';
+      ctx.lineWidth = 1;
+
+      const gridSize = 40;
+      offset = (offset + 0.3) % gridSize;
+
+      // Vertical lines
+      for (let x = 0; x <= width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+
+      // Horizontal lines moving slightly
+      for (let y = offset; y <= height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    };
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!mediaQuery.matches) {
+      animationId = requestAnimationFrame(draw);
+    }
+  }
+</script>

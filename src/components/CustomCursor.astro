@@ -1,0 +1,79 @@
+---
+---
+<div id="hud-cursor" class="hidden lg:block pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden="true">
+  <!-- Precision dot -->
+  <div id="cursor-dot" class="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[var(--accent-blue)] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200 opacity-0 pointer-events-none"></div>
+  
+  <!-- Smooth trailing ring -->
+  <div id="cursor-ring" class="fixed top-0 left-0 w-7 h-7 rounded-full border border-[var(--accent-blue)]/60 -translate-x-1/2 -translate-y-1/2 transition-opacity duration-200 opacity-0 pointer-events-none"></div>
+
+  <!-- 4 Corner Targets [ ] for hovered interactive items -->
+  <div id="cursor-target" class="fixed pointer-events-none transition-all duration-150 opacity-0">
+    <span class="corner corner-tl absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-[var(--accent-orange)] -translate-x-1 -translate-y-1"></span>
+    <span class="corner corner-tr absolute top-0 right-0 w-2.5 h-2.5 border-t-2 border-r-2 border-[var(--accent-orange)] translate-x-1 -translate-y-1"></span>
+    <span class="corner corner-bl absolute bottom-0 left-0 w-2.5 h-2.5 border-b-2 border-l-2 border-[var(--accent-orange)] -translate-x-1 translate-y-1"></span>
+    <span class="corner corner-br absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-[var(--accent-orange)] translate-x-1 translate-y-1"></span>
+  </div>
+</div>
+
+<script>
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    const target = document.getElementById('cursor-target');
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      if (!isVisible && dot && ring) {
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        isVisible = true;
+      }
+
+      if (dot) {
+        dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+      }
+    });
+
+    const animateRing = () => {
+      // Lerp smooth follow
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+
+      if (ring) {
+        ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      }
+      requestAnimationFrame(animateRing);
+    };
+    requestAnimationFrame(animateRing);
+
+    // Magnetic target locking on interactive elements
+    const lockables = 'a, button, input, .hud-card, .interactive-target';
+    document.addEventListener('mouseover', (e) => {
+      const el = (e.target as HTMLElement)?.closest(lockables) as HTMLElement | null;
+      if (el && target) {
+        const rect = el.getBoundingClientRect();
+        target.style.top = `${rect.top}px`;
+        target.style.left = `${rect.left}px`;
+        target.style.width = `${rect.width}px`;
+        target.style.height = `${rect.height}px`;
+        target.style.opacity = '1';
+        window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'HOVER' }));
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const el = (e.target as HTMLElement)?.closest(lockables);
+      if (el && target) {
+        target.style.opacity = '0';
+        window.dispatchEvent(new CustomEvent('hud-mode-change', { detail: 'NORMAL' }));
+      }
+    });
+  }
+</script>

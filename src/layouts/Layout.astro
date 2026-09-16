@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import TopNav from '../components/TopNav.astro';
 import Footer from '../components/Footer.astro';
+import GridCanvas from '../components/GridCanvas.astro';
+import CustomCursor from '../components/CustomCursor.astro';
 
 interface Props {
   title?: string;
@@ -42,6 +44,8 @@ const {
   </script>
 </head>
 <body class="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+  <GridCanvas />
+  <CustomCursor />
   <TopNav />
   <slot />
   <Footer />
